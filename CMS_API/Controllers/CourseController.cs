@@ -40,7 +40,8 @@ namespace CMS_API.Controllers
             }
         }
 
-        [HttpPost("CreateCourse/{teacher_id}")]
+
+        [HttpPost]
         public async Task<IActionResult> Post(string coursename, string code, int teacher_id)
         {
             Course c = new Course
