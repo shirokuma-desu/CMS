@@ -32,8 +32,6 @@ namespace CMS_API.Models
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             IConfigurationRoot config = builder.Build();
             optionsBuilder.UseSqlServer(config.GetConnectionString("ConnectionStrings"));
-
-
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

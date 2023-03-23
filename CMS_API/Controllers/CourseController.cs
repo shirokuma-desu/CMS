@@ -1,4 +1,4 @@
-﻿/*using CMS_API.Models;
+﻿using CMS_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
@@ -17,30 +17,31 @@ namespace CMS_API.Controllers
         {
             _context = context;
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var context = await _context.Courses.Include(lm => lm.LearningMaterials).Include(a=>a.Assignments).Include( u => u.Teacher).ToListAsync();
+            var context = await _context.Courses.Include(lm => lm.LearningMaterials).Include(a => a.Assignments).Include(u => u.Teacher).ToListAsync();
             return Ok(context);
         }
 
         [HttpGet("{id}")]
-        public  async Task<IActionResult> GetCourseId(int id)
+        public async Task<IActionResult> GetCourseId(int id)
         {
             try
             {
                 var context = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
                 return Ok(context);
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
 
         [HttpPost("CreateCourse/{teacher_id}")]
-        public async Task<IActionResult> Post(string coursename,string code,int teacher_id)
+        public async Task<IActionResult> Post(string coursename, string code, int teacher_id)
         {
             Course c = new Course
             {
@@ -64,11 +65,12 @@ namespace CMS_API.Controllers
             try
             {
                 var context = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
-                
-                    var c = _context.Courses.Remove(context);
-                     await _context.SaveChangesAsync();
-                    return Ok();
-            }catch
+
+                var c = _context.Courses.Remove(context);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch
             (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -76,4 +78,3 @@ namespace CMS_API.Controllers
         }
     }
 }
-*/

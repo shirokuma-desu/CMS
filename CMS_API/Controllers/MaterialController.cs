@@ -26,9 +26,9 @@ namespace CMS_API.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> PostMaterialbyTeacher(int id)
+        public async Task<IActionResult> CreatebyTeacher(int id)
         {
-
+            return Ok();
         }
     }
 }

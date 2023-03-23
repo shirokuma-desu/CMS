@@ -5,7 +5,7 @@ namespace CMS_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class Assignment : ControllerBase
+    public class SubmissionController : ControllerBase
     {
     }
 }
