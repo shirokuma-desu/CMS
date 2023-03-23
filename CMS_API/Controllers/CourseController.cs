@@ -34,8 +34,17 @@ namespace CMS_API.Controllers
 
         // POST api/<Course>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> Post(string coursename,string code,int teacher_id)
         {
+            Course c = new Course
+            {
+                Code = code,
+                Name = coursename,
+                TeacherId = teacher_id,
+            };
+            var context = await _context.Courses.AddAsync(c);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
 
         // PUT api/<Course>/5
