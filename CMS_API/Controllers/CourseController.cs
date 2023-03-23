@@ -1,4 +1,4 @@
-﻿using CMS_API.Models;
+﻿/*using CMS_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +18,6 @@ namespace CMS_API.Controllers
             _context = context;
         }
         
-        // GET: api/<Course>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -26,7 +25,6 @@ namespace CMS_API.Controllers
             return Ok(context);
         }
 
-        // GET api/<Course>/5
         [HttpGet("{id}")]
         public  async Task<IActionResult> GetCourseId(int id)
         {
@@ -41,7 +39,6 @@ namespace CMS_API.Controllers
             }
         }
 
-        // POST api/<Course>
         [HttpPost("CreateCourse/{teacher_id}")]
         public async Task<IActionResult> Post(string coursename,string code,int teacher_id)
         {
@@ -56,13 +53,11 @@ namespace CMS_API.Controllers
             return Ok();
         }
 
-        // PUT api/<Course>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/<Course>/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -81,3 +76,4 @@ namespace CMS_API.Controllers
         }
     }
 }
+*/

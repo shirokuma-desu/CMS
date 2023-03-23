@@ -17,7 +17,6 @@ namespace CMS_API.Models
         public string Password { get; set; } = null!;
         public int Role { get; set; }
 
-        public virtual Role RoleNavigation { get; set; } = null!;
         public virtual ICollection<Course> Courses { get; set; }
         public virtual ICollection<EnrollCourse> EnrollCourses { get; set; }
         public virtual ICollection<UserDetail> UserDetails { get; set; }
