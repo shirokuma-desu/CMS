@@ -29,5 +29,12 @@ namespace CMS_API.Controllers
             var sub = await _context.Submissions.AddAsync(s);
             return Ok(sub);
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(Submission s)
+        {
+            var sub =  _context.Submissions.Remove(s);
+            return Ok(sub);
+        }
     }
 }

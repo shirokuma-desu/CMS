@@ -23,11 +23,18 @@ namespace CMS_API.Controllers
             var context = await _context.LearningMaterials.ToListAsync();
             return Ok(context);
         }
-
+        [HttpGet("{course_id}")]
+        public async Task<IActionResult> getListMaterialByCourse(int course_id)
+        {
+            var context = await _context.LearningMaterials.Include(c=>c.Course).Where(c=> c.CourseId == course_id).ToListAsync();
+            return Ok(context);
+        }
 
         [HttpPost]
-        public async Task<IActionResult> CreatebyTeacher(int id)
+        public async Task<IActionResult> Post(LearningMaterial m)
         {
+            _context.Add(m);
+            await _context.SaveChangesAsync();
             return Ok();
         }
     }

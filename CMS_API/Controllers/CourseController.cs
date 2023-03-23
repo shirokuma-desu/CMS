@@ -19,25 +19,10 @@ namespace CMS_API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> getAllCourse()
         {
-            var context = await _context.Courses.Include(lm => lm.LearningMaterials).Include(a => a.Assignments).Include(u => u.Teacher).ToListAsync();
+            var context = await _context.Courses.ToListAsync();
             return Ok(context);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCourseId(int id)
-        {
-            try
-            {
-                var context = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
-                return Ok(context);
-
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
         }
 
 
@@ -55,10 +40,31 @@ namespace CMS_API.Controllers
             return Ok();
         }
 
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Put(int id,int teacher_id,string name,string code)
         {
+            try
+            {
+                var tmp = await _context.Courses.FindAsync(id);
+                if (tmp == null)
+                {
+                    return NotFound();
+                }
+
+                tmp.Code = code;
+                tmp.Name = name;
+                tmp.TeacherId = teacher_id;
+
+                _context.Entry(tmp).CurrentValues.SetValues(tmp);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+        
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
