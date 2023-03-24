@@ -23,5 +23,11 @@ namespace CMS_API.Controllers
             return Ok(context);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+
+        }
+
     }
 }

@@ -20,6 +20,7 @@ namespace CMS_API.Models
         public virtual DbSet<Course> Courses { get; set; } = null!;
         public virtual DbSet<EnrollCourse> EnrollCourses { get; set; } = null!;
         public virtual DbSet<LearningMaterial> LearningMaterials { get; set; } = null!;
+        public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Submission> Submissions { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<UserDetail> UserDetails { get; set; } = null!;
@@ -27,11 +28,13 @@ namespace CMS_API.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory
-                .GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                 .SetBasePath(Directory
+                 .GetCurrentDirectory())
+                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             IConfigurationRoot config = builder.Build();
             optionsBuilder.UseSqlServer(config.GetConnectionString("ConnectionStrings"));
+
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -123,11 +126,22 @@ namespace CMS_API.Models
                     .HasConstraintName("FK_Learning_Material_Course");
             });
 
-            modelBuilder.Entity<Submission>(entity =>
+            modelBuilder.Entity<Role>(entity =>
             {
+                entity.ToTable("Role");
+
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
                     .HasColumnName("id");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .HasColumnName("name");
+            });
+
+            modelBuilder.Entity<Submission>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.AssignmentId).HasColumnName("assignment_id");
 
@@ -160,6 +174,12 @@ namespace CMS_API.Models
                     .HasColumnName("password");
 
                 entity.Property(e => e.Role).HasColumnName("role");
+
+                entity.HasOne(d => d.RoleNavigation)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.Role)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_User_Role");
             });
 
             modelBuilder.Entity<UserDetail>(entity =>
