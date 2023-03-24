@@ -1,4 +1,4 @@
-﻿/*using CMS_API.Models;
+﻿using CMS_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +41,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Put(int id,int teacher_id,string name,string code)
+        public async Task<IActionResult> Put(int id, int teacher_id, string name, string code)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace CMS_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
@@ -85,4 +85,3 @@ namespace CMS_API.Controllers
         }
     }
 }
-*/

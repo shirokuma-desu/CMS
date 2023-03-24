@@ -1,4 +1,4 @@
-﻿/*using CMS_API.Models;
+﻿using CMS_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,16 +11,16 @@ namespace CMS_API.Controllers
     {
         private CMSContext _context;
 
-        public SubmissionController (CMSContext context)
+        public SubmissionController(CMSContext context)
         {
-           _context = context;
+            _context = context;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSubByStudent(int student_id,int assignment_id)
+        public async Task<IActionResult> GetSubByStudent(int student_id, int assignment_id)
         {
-            var subs =  await _context.Submissions.FirstOrDefaultAsync(s => s.StudentJd == student_id && s.AssignmentId == assignment_id);
-            return Ok(subs);    
+            var subs = await _context.Submissions.FirstOrDefaultAsync(s => s.StudentJd == student_id && s.AssignmentId == assignment_id);
+            return Ok(subs);
         }
 
         [HttpPost]
@@ -33,9 +33,8 @@ namespace CMS_API.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete(Submission s)
         {
-            var sub =  _context.Submissions.Remove(s);
+            var sub = _context.Submissions.Remove(s);
             return Ok(sub);
         }
     }
 }
-*/

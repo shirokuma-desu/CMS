@@ -1,4 +1,4 @@
-﻿/*using CMS_API.Models;
+﻿using CMS_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,7 +26,7 @@ namespace CMS_API.Controllers
         [HttpGet("{course_id}")]
         public async Task<IActionResult> getListMaterialByCourse(int course_id)
         {
-            var context = await _context.LearningMaterials.Include(c=>c.Course).Where(c=> c.CourseId == course_id).ToListAsync();
+            var context = await _context.LearningMaterials.Include(c => c.Course).Where(c => c.CourseId == course_id).ToListAsync();
             return Ok(context);
         }
 
@@ -39,4 +39,3 @@ namespace CMS_API.Controllers
         }
     }
 }
-*/
