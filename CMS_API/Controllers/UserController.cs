@@ -1,4 +1,4 @@
-﻿using CMS_API.Models;
+﻿/*using CMS_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -47,3 +47,4 @@ namespace CMS_API.Controllers
         }
     }
 }
+*/

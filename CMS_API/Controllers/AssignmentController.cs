@@ -26,7 +26,30 @@ namespace CMS_API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            try
+            {
 
+                var context = await _context.Assignments.FirstOrDefaultAsync(c => c.Id == id);
+
+                if (context != null)
+                {
+                    var c = _context.Assignments.Remove(context);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return BadRequest("Null");
+            }
+            catch
+            (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(Assignment assignment)
+        {
+            return Ok(assignment);
         }
 
     }

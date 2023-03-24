@@ -71,11 +71,16 @@ namespace CMS_API.Controllers
         {
             try
             {
+
                 var context = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
 
-                var c = _context.Courses.Remove(context);
-                await _context.SaveChangesAsync();
-                return Ok();
+                if(context != null)
+                {
+                    var c = _context.Courses.Remove(context);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
             }
             catch
             (Exception ex)

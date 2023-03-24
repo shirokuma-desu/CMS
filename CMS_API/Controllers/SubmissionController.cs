@@ -19,7 +19,12 @@ namespace CMS_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetSubByStudent(int student_id, int assignment_id)
         {
+            
             var subs = await _context.Submissions.FirstOrDefaultAsync(s => s.StudentJd == student_id && s.AssignmentId == assignment_id);
+            if (subs == null)
+            {
+                return NotFound();
+            }
             return Ok(subs);
         }
 
@@ -30,11 +35,29 @@ namespace CMS_API.Controllers
             return Ok(sub);
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete(Submission s)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            var sub = _context.Submissions.Remove(s);
-            return Ok(sub);
+            try
+            {
+
+                var context = await _context.Submissions.FirstOrDefaultAsync(c => c.Id == id);
+
+                if (context != null)
+                {
+                    var c = _context.Submissions.Remove(context);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
+            }
+            catch
+            (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
     }
+    
 }

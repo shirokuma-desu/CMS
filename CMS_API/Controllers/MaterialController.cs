@@ -1,6 +1,8 @@
 ﻿using CMS_API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -31,11 +33,51 @@ namespace CMS_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(LearningMaterial m)
+        public async Task<IActionResult> Post(string title,string information,string url,int course_id)
         {
-            _context.Add(m);
-            await _context.SaveChangesAsync();
-            return Ok();
+            LearningMaterial lm = new LearningMaterial
+            {
+                CourseId = course_id,
+                Title = title,
+                Url = url,
+                Information = information,
+            };
+            if(lm == null)
+            {
+                return NoContent();
+            }
+            try
+            {
+                await _context.LearningMaterials.AddAsync(lm);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (SqlException ex) 
+            {
+                return BadRequest(ex);
+            }
+        }
+        [HttpDelete("id")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+
+                var context = await _context.LearningMaterials.SingleOrDefaultAsync(c => c.Id == id);
+
+                if (context != null)
+                {
+                    var c = _context.LearningMaterials.Remove(context);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
+            }
+            catch
+            (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
