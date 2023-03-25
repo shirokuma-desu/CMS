@@ -47,5 +47,14 @@ namespace CMS_API.Controllers
                 }
             });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> getUserDetail()
+        {
+            var context = await _context.Users.ToListAsync();
+            return Ok(context);
+        }
+        
+         
     }
 }

@@ -27,7 +27,45 @@ namespace CMS_API.Controllers
             var context = await _context.Courses.ToListAsync();
             return Ok(context);
         }
+        [HttpGet("getcoursebycode/{code}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> getCoursebyCode(string code)
+        {
+            try
+            {
+                var context = await _context.Courses.Where(c=>c.Code.Contains(code.ToUpper())).ToListAsync();
+                if (context == null)
+                {
+                    return NoContent();
+                }
+                return Ok(context);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
+        }
 
+        [HttpGet("getcoursebyid/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> getCoursebyId(int id)
+        {
+            try
+            {
+                var context = await _context.Courses.Where(c => c.CourseId == id).ToListAsync();
+                if (context == null)
+                {
+                    return NoContent();
+                }
+                return Ok(context);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CourseModel model)
