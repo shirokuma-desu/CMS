@@ -1,4 +1,5 @@
-﻿using CMS_API.Models;
+﻿using CMS_API.ControllerModels;
+using CMS_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,19 @@ namespace CMS_API.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet("course/{id}/teacher")]
+        public async Task<IActionResult> getListSubByStudent(int assignment_id)
+        {
+
+            var subs = await _context.Submissions.Where(s=>s.AssignmentId == assignment_id).ToListAsync();
+            if (subs == null)
+            {
+                return NotFound();
+            }
+            return Ok(subs);
+        }
+
+        [HttpGet("student")]
         public async Task<IActionResult> GetSubByStudent(int student_id, int assignment_id)
         {
 
@@ -28,11 +41,22 @@ namespace CMS_API.Controllers
             return Ok(subs);
         }
 
+
+
         [HttpPost]
-        public async Task<IActionResult> Create(Submission s)
+        public async Task<IActionResult> Submit([FromBody] SubmissionModel model)
         {
-            var sub = await _context.Submissions.AddAsync(s);
-            return Ok(sub);
+            var userId = int.Parse(User.Identity?.Name);
+            Submission s = new Submission
+            {
+                Url = model.Url,
+                SubmissionTime = model.SubmissionTime,
+                AssignmentId = model.AssignmentId,
+                StudentJd = userId,
+            };
+            await _context.Submissions.AddAsync(s);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
 
         [HttpDelete("{id}")]
