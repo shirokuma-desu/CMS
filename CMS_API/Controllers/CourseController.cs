@@ -68,6 +68,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> Post([FromBody] CourseModel model)
         {
             Course c = new Course
@@ -82,6 +83,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> Put(int id, [FromBody] CourseModel model)
         {
             try

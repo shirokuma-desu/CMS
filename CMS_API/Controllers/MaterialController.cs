@@ -1,5 +1,6 @@
 ﻿using CMS_API.ControllerModels;
 using CMS_API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> Post([FromBody] MaterialModel model)
         {
             LearningMaterial lm = new LearningMaterial
@@ -60,6 +62,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpPatch("id")]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> Put(int id, [FromBody] MaterialModel model)
         {
             try
@@ -85,6 +88,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpDelete("id")]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> Delete(int id)
         {
             try
