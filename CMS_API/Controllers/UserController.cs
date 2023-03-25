@@ -51,6 +51,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> getUserDetail()
         {
             var context = await _context.Users.ToListAsync();
@@ -71,6 +72,7 @@ namespace CMS_API.Controllers
             return Ok();
         }
         [HttpPatch("{id}")]
+        [Authorize(Roles = "teacher,student")]
         public async Task<IActionResult> EditProfile([FromBody] UserProfileModel model, int id)
         {
             try
