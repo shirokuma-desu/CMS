@@ -23,7 +23,6 @@ namespace CMS_API.Models
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Submission> Submissions { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
-        public virtual DbSet<UserDetail> UserDetails { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -172,32 +171,13 @@ namespace CMS_API.Models
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");
 
-                entity.Property(e => e.Email)
-                    .HasMaxLength(50)
-                    .HasColumnName("email");
-
-                entity.Property(e => e.Password)
-                    .HasMaxLength(50)
-                    .HasColumnName("password");
-
-                entity.Property(e => e.RoleId).HasColumnName("role_id");
-
-                entity.HasOne(d => d.Role)
-                    .WithMany(p => p.Users)
-                    .HasForeignKey(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_User_Role");
-            });
-
-            modelBuilder.Entity<UserDetail>(entity =>
-            {
-                entity.ToTable("User_Detail");
-
-                entity.Property(e => e.UserDetailId).HasColumnName("user_detail_id");
-
                 entity.Property(e => e.Dob)
                     .HasColumnType("date")
                     .HasColumnName("dob");
+
+                entity.Property(e => e.Email)
+                    .HasMaxLength(50)
+                    .HasColumnName("email");
 
                 entity.Property(e => e.Major)
                     .HasMaxLength(50)
@@ -207,16 +187,22 @@ namespace CMS_API.Models
                     .HasMaxLength(50)
                     .HasColumnName("name");
 
+                entity.Property(e => e.Password)
+                    .HasMaxLength(50)
+                    .HasColumnName("password");
+
                 entity.Property(e => e.Phone)
                     .HasMaxLength(10)
-                    .HasColumnName("phone");
+                    .HasColumnName("phone")
+                    .IsFixedLength();
 
-                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.RoleId).HasColumnName("role_id");
 
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.UserDetails)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK_User_Detail_User");
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_User_Role");
             });
 
             OnModelCreatingPartial(modelBuilder);

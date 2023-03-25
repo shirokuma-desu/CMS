@@ -19,7 +19,7 @@ namespace CMS_API.Controllers
             _context = context;
         }
 
-        [HttpGet] 
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var context = await _context.Assignments.Include(s => s.Submissions).ToListAsync();
@@ -53,9 +53,9 @@ namespace CMS_API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "teacher")]
-        public async Task<IActionResult> Post(Assignment assignment)
+        public async Task<IActionResult> Post(string name, string information, DateOnly date, string url, int course_id)
         {
-            return Ok(assignment);
+            return Ok();
         }
 
     }

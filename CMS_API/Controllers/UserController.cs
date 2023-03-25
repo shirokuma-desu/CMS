@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CMS_API.JWTService;
+using CMS_API.ControllerModels;
 
 namespace CMS_API.Controllers
 {
@@ -23,7 +24,7 @@ namespace CMS_API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
             var login = await _context.Users
-                .Where(a => a.Email == loginModel.Username && a.Password == loginModel.Password).Include(r=>r.Role)
+                .Where(a => a.Email == loginModel.Username && a.Password == loginModel.Password).Include(r => r.Role)
                 .FirstOrDefaultAsync();
 
             if (login == null)

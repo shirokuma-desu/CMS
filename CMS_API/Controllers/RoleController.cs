@@ -18,7 +18,7 @@ namespace CMS_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetRole()
         {
-            var context = await _context.Users.Include(u=>u.Role).ToListAsync();
+            var context = await _context.Users.Include(u => u.Role).ToListAsync();
             return Ok(context);
         }
     }

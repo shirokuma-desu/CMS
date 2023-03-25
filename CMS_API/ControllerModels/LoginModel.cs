@@ -1,4 +1,4 @@
-﻿namespace CMS_API.Controllers
+﻿namespace CMS_API.ControllerModels
 {
     public class LoginModel
     {
