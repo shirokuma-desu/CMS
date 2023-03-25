@@ -18,7 +18,12 @@ namespace Client.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Login()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult Login(string username, string password)
         {
             return View();
         }
