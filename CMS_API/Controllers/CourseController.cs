@@ -44,7 +44,6 @@ namespace CMS_API.Controllers
         }
 
         [HttpPatch("{id}")]
-        //public async Task<IActionResult> Put(int id, int teacher_id, string name, string code)
         public async Task<IActionResult> Put(int id, [FromBody] CourseModel model)
         {
             try

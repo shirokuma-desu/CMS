@@ -1,4 +1,5 @@
-﻿using CMS_API.Models;
+﻿using CMS_API.ControllerModels;
+using CMS_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -33,14 +34,14 @@ namespace CMS_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(string title, string information, string url, int course_id)
+        public async Task<IActionResult> Post([FromBody] MaterialModel model)
         {
             LearningMaterial lm = new LearningMaterial
             {
-                CourseId = course_id,
-                Title = title,
-                Url = url,
-                Information = information,
+                CourseId = model.CourseId,
+                Title = model.Title,
+                Url = model.Url,
+                Information = model.Information,
             };
             if (lm == null)
             {
@@ -57,6 +58,32 @@ namespace CMS_API.Controllers
                 return BadRequest(ex);
             }
         }
+
+        [HttpPatch("id")]
+        public async Task<IActionResult> Put(int id, [FromBody] MaterialModel model)
+        {
+            try
+            {
+                var tmp = await _context.LearningMaterials.FindAsync(id);
+                if (tmp == null)
+                {
+                    return NotFound();
+                }
+
+                tmp.Title = model.Title;
+                tmp.Information = model.Information;
+                tmp.Url = model.Url;
+
+                _context.Entry(tmp).CurrentValues.SetValues(tmp);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpDelete("id")]
         public async Task<IActionResult> Delete(int id)
         {
