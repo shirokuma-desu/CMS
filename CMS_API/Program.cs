@@ -48,9 +48,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization(o =>
 {
-    o.AddPolicy("Admin", policy => policy.RequireClaim("Admin"));
-    o.AddPolicy("Teacher", policy => policy.RequireClaim("Teacher"));
-    o.AddPolicy("Student", policy => policy.RequireClaim("Student"));
+    o.AddPolicy("Admin", policy => policy.RequireClaim("admin"));
+    o.AddPolicy("Teacher", policy => policy.RequireClaim("teacher"));
+    o.AddPolicy("Student", policy => policy.RequireClaim("student"));
 });
 
 builder.Services.AddSwaggerGen(
