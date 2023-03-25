@@ -1,4 +1,5 @@
-﻿using CMS_API.Models;
+﻿using CMS_API.ControllerModels;
+using CMS_API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
@@ -26,17 +27,54 @@ namespace CMS_API.Controllers
             var context = await _context.Courses.ToListAsync();
             return Ok(context);
         }
+        [HttpGet("getcoursebycode/{code}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> getCoursebyCode(string code)
+        {
+            try
+            {
+                var context = await _context.Courses.Where(c=>c.Code.Contains(code.ToUpper())).ToListAsync();
+                if (context == null)
+                {
+                    return NoContent();
+                }
+                return Ok(context);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
+        }
 
+        [HttpGet("getcoursebyid/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> getCoursebyId(int id)
+        {
+            try
+            {
+                var context = await _context.Courses.Where(c => c.CourseId == id).ToListAsync();
+                if (context == null)
+                {
+                    return NoContent();
+                }
+                return Ok(context);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
 
         [HttpPost]
-        [Authorize(Roles = "teacher")]
-        public async Task<IActionResult> Post(string coursename, string code, int teacher_id)
+        public async Task<IActionResult> Post([FromBody] CourseModel model)
         {
             Course c = new Course
             {
-                Code = code,
-                Name = coursename,
-                TeacherId = teacher_id,
+                Code = model.Code,
+                Name = model.Name,
+                TeacherId = model.TeacherId,
             };
             var context = await _context.Courses.AddAsync(c);
             await _context.SaveChangesAsync();
@@ -44,8 +82,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpPatch("{id}")]
-        [Authorize(Roles = "teacher")]
-        public async Task<IActionResult> Put(int id, int teacher_id, string name, string code)
+        public async Task<IActionResult> Put(int id, [FromBody] CourseModel model)
         {
             try
             {
@@ -55,9 +92,9 @@ namespace CMS_API.Controllers
                     return NotFound();
                 }
 
-                tmp.Code = code;
-                tmp.Name = name;
-                tmp.TeacherId = teacher_id;
+                tmp.Code = model.Code;
+                tmp.Name = model.Name;
+                tmp.TeacherId = model.TeacherId;
 
                 _context.Entry(tmp).CurrentValues.SetValues(tmp);
                 await _context.SaveChangesAsync();
