@@ -50,7 +50,8 @@ namespace Client.Controllers
 
         public async Task<IActionResult> Details(int id) 
         {
-            HttpResponseMessage response = await client.GetAsync(CourseApiUrl+ "/"+id);
+            HttpResponseMessage response = await client.GetAsync(CourseApiUrl+ "/getcoursebyid/" + id);
+            Console.Write(response);
             string strData = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {

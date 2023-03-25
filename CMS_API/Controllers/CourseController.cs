@@ -53,7 +53,7 @@ namespace CMS_API.Controllers
         {
             try
             {
-                var context = await _context.Courses.Where(c => c.CourseId == id).ToListAsync();
+                var context = await _context.Courses.Include(u=>u.Teacher).FirstOrDefaultAsync(c => c.CourseId == id);
                 if (context == null)
                 {
                     return NoContent();
