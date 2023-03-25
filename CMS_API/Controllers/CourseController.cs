@@ -1,4 +1,5 @@
 ﻿using CMS_API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> getAllCourse()
         {
             var context = await _context.Courses.ToListAsync();
@@ -27,6 +29,7 @@ namespace CMS_API.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> Post(string coursename, string code, int teacher_id)
         {
             Course c = new Course
@@ -41,6 +44,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> Put(int id, int teacher_id, string name, string code)
         {
             try
@@ -67,6 +71,7 @@ namespace CMS_API.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> Delete(int id)
         {
             try

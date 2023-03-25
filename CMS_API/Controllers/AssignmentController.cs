@@ -1,7 +1,10 @@
 ﻿using CMS_API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Data;
 
 namespace CMS_API.Controllers
 {
@@ -16,7 +19,7 @@ namespace CMS_API.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet] 
         public async Task<IActionResult> GetAll()
         {
             var context = await _context.Assignments.Include(s => s.Submissions).ToListAsync();
@@ -24,6 +27,8 @@ namespace CMS_API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "teacher")]
+        [SwaggerOperation(Summary = "thua")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -47,6 +52,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> Post(Assignment assignment)
         {
             return Ok(assignment);
