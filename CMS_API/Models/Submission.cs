@@ -5,7 +5,7 @@ namespace CMS_API.Models
 {
     public partial class Submission
     {
-        public int Id { get; set; }
+        public int IdSubmission { get; set; }
         public int? StudentJd { get; set; }
         public int? AssignmentId { get; set; }
         public DateTime? SubmissionTime { get; set; }

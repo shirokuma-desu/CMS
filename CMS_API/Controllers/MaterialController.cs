@@ -33,7 +33,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(string title,string information,string url,int course_id)
+        public async Task<IActionResult> Post(string title, string information, string url, int course_id)
         {
             LearningMaterial lm = new LearningMaterial
             {
@@ -42,7 +42,7 @@ namespace CMS_API.Controllers
                 Url = url,
                 Information = information,
             };
-            if(lm == null)
+            if (lm == null)
             {
                 return NoContent();
             }
@@ -52,7 +52,7 @@ namespace CMS_API.Controllers
                 await _context.SaveChangesAsync();
                 return Ok();
             }
-            catch (SqlException ex) 
+            catch (SqlException ex)
             {
                 return BadRequest(ex);
             }
@@ -63,7 +63,7 @@ namespace CMS_API.Controllers
             try
             {
 
-                var context = await _context.LearningMaterials.SingleOrDefaultAsync(c => c.Id == id);
+                var context = await _context.LearningMaterials.SingleOrDefaultAsync(c => c.LmId == id);
 
                 if (context != null)
                 {

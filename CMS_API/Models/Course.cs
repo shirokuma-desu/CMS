@@ -12,7 +12,7 @@ namespace CMS_API.Models
             LearningMaterials = new HashSet<LearningMaterial>();
         }
 
-        public int Id { get; set; }
+        public int CourseId { get; set; }
         public string Name { get; set; } = null!;
         public string? Code { get; set; }
         public int? TeacherId { get; set; }

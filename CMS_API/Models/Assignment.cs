@@ -10,7 +10,7 @@ namespace CMS_API.Models
             Submissions = new HashSet<Submission>();
         }
 
-        public int Id { get; set; }
+        public int AsignmentId { get; set; }
         public int? TeacherId { get; set; }
         public string? Name { get; set; }
         public DateTime? Deadline { get; set; }

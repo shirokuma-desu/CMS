@@ -34,16 +34,17 @@ namespace CMS_API.Models
             IConfigurationRoot config = builder.Build();
             optionsBuilder.UseSqlServer(config.GetConnectionString("ConnectionStrings"));
 
-
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Assignment>(entity =>
             {
+                entity.HasKey(e => e.AsignmentId);
+
                 entity.ToTable("Assignment");
 
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.AsignmentId).HasColumnName("asignment_id");
 
                 entity.Property(e => e.CourseId).HasColumnName("course_id");
 
@@ -71,7 +72,7 @@ namespace CMS_API.Models
             {
                 entity.ToTable("Course");
 
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.CourseId).HasColumnName("course_id");
 
                 entity.Property(e => e.Code).HasMaxLength(10);
 
@@ -85,9 +86,11 @@ namespace CMS_API.Models
 
             modelBuilder.Entity<EnrollCourse>(entity =>
             {
+                entity.HasKey(e => e.IdEnrollCourse);
+
                 entity.ToTable("Enroll_Course");
 
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.IdEnrollCourse).HasColumnName("id_enroll_course");
 
                 entity.Property(e => e.CourseId).HasColumnName("course_id");
 
@@ -106,9 +109,11 @@ namespace CMS_API.Models
 
             modelBuilder.Entity<LearningMaterial>(entity =>
             {
+                entity.HasKey(e => e.LmId);
+
                 entity.ToTable("Learning_Material");
 
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.LmId).HasColumnName("lm_id");
 
                 entity.Property(e => e.CourseId).HasColumnName("course_id");
 
@@ -130,9 +135,9 @@ namespace CMS_API.Models
             {
                 entity.ToTable("Role");
 
-                entity.Property(e => e.Id)
+                entity.Property(e => e.RoleId)
                     .ValueGeneratedNever()
-                    .HasColumnName("id");
+                    .HasColumnName("role_id");
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(50)
@@ -141,7 +146,9 @@ namespace CMS_API.Models
 
             modelBuilder.Entity<Submission>(entity =>
             {
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.HasKey(e => e.IdSubmission);
+
+                entity.Property(e => e.IdSubmission).HasColumnName("id_submission");
 
                 entity.Property(e => e.AssignmentId).HasColumnName("assignment_id");
 
@@ -163,7 +170,7 @@ namespace CMS_API.Models
             {
                 entity.ToTable("User");
 
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.UserId).HasColumnName("user_id");
 
                 entity.Property(e => e.Email)
                     .HasMaxLength(50)
@@ -173,11 +180,11 @@ namespace CMS_API.Models
                     .HasMaxLength(50)
                     .HasColumnName("password");
 
-                entity.Property(e => e.Role).HasColumnName("role");
+                entity.Property(e => e.RoleId).HasColumnName("role_id");
 
-                entity.HasOne(d => d.RoleNavigation)
+                entity.HasOne(d => d.Role)
                     .WithMany(p => p.Users)
-                    .HasForeignKey(d => d.Role)
+                    .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_User_Role");
             });
@@ -186,7 +193,7 @@ namespace CMS_API.Models
             {
                 entity.ToTable("User_Detail");
 
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.UserDetailId).HasColumnName("user_detail_id");
 
                 entity.Property(e => e.Dob)
                     .HasColumnType("date")

@@ -1,3 +1,4 @@
+using CMS_API.JWTService;
 using CMS_API.Models;
 using System.Text.Json.Serialization;
 
@@ -10,6 +11,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<CMSContext>();
+
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 

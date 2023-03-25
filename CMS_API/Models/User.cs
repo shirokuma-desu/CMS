@@ -12,12 +12,12 @@ namespace CMS_API.Models
             UserDetails = new HashSet<UserDetail>();
         }
 
-        public int Id { get; set; }
+        public int UserId { get; set; }
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;
-        public int Role { get; set; }
+        public int RoleId { get; set; }
 
-        public virtual Role RoleNavigation { get; set; } = null!;
+        public virtual Role Role { get; set; } = null!;
         public virtual ICollection<Course> Courses { get; set; }
         public virtual ICollection<EnrollCourse> EnrollCourses { get; set; }
         public virtual ICollection<UserDetail> UserDetails { get; set; }

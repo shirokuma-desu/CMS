@@ -5,7 +5,7 @@ namespace CMS_API.Models
 {
     public partial class UserDetail
     {
-        public int Id { get; set; }
+        public int UserDetailId { get; set; }
         public string Name { get; set; } = null!;
         public DateTime? Dob { get; set; }
         public string? Phone { get; set; }

@@ -72,9 +72,9 @@ namespace CMS_API.Controllers
             try
             {
 
-                var context = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
+                var context = await _context.Courses.FirstOrDefaultAsync(c => c.CourseId == id);
 
-                if(context != null)
+                if (context != null)
                 {
                     var c = _context.Courses.Remove(context);
                     await _context.SaveChangesAsync();

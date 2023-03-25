@@ -1,4 +1,4 @@
-﻿/*using CMS_API.Models;
+﻿using CMS_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,17 +11,19 @@ namespace CMS_API.Controllers
     public class UserController : ControllerBase
     {
         private CMSContext _context;
+        private ITokenService _tokenService;
 
-        public UserController(CMSContext context)
+        public UserController(CMSContext context, ITokenService tokenService)
         {
             _context = context;
+            _tokenService = tokenService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> LoginTeacher([FromBody] LoginModel loginModel)
+        [HttpPost]
+        public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
             var login = await _context.Users
-                .Where(a => a.Email == loginModel.Email && a.Password == loginModel.Password)
+                .Where(a => a.Email == loginModel.Username && a.Password == loginModel.Password).Include(r=>r.Role)
                 .FirstOrDefaultAsync();
 
             if (login == null)
@@ -32,7 +34,7 @@ namespace CMS_API.Controllers
                     data = ""
                 });
 
-            var jwtToken = CreateAccount.CreateToken(login);
+            var jwtToken = _tokenService.CreateToken(login);
             // chỗ này m gọi class tạo token
             return Ok(new
             {
@@ -40,11 +42,9 @@ namespace CMS_API.Controllers
                 message = "User logged in successfully",
                 data = new
                 {
-                    id = User,
                     token = jwtToken
                 }
             });
         }
     }
 }
-*/

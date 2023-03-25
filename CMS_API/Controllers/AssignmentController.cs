@@ -29,7 +29,7 @@ namespace CMS_API.Controllers
             try
             {
 
-                var context = await _context.Assignments.FirstOrDefaultAsync(c => c.Id == id);
+                var context = await _context.Assignments.FirstOrDefaultAsync(c => c.AsignmentId == id);
 
                 if (context != null)
                 {

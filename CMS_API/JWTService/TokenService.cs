@@ -7,18 +7,22 @@ using System.Text;
 
 namespace CMS_API.JWTService
 {
-    public class CreateAccount
+    public class TokenService : ITokenService
     {
         private  readonly IConfiguration _configuration;
-        public  string CreateToken(User account)
+        public TokenService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+        public string CreateToken(User account)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var claims = new List<Claim>
         {
-            new(ClaimTypes.Role, account.RoleNavigation.Name),
+            new(ClaimTypes.Role, account.Role.Name.ToString()),
             new(ClaimTypes.Email, account.Email),
-            new(ClaimTypes.Name, account.Id.ToString())
+            new(ClaimTypes.Name, account.UserId.ToString())
         };
             var securityKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_configuration["JwtToken:NotTokenKeyForSureSourceTrustMeDude"]));

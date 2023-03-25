@@ -5,7 +5,7 @@ namespace CMS_API.Models
 {
     public partial class LearningMaterial
     {
-        public int Id { get; set; }
+        public int LmId { get; set; }
         public string? Title { get; set; }
         public string? Information { get; set; }
         public string? Url { get; set; }

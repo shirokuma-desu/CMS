@@ -19,7 +19,7 @@ namespace CMS_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetSubByStudent(int student_id, int assignment_id)
         {
-            
+
             var subs = await _context.Submissions.FirstOrDefaultAsync(s => s.StudentJd == student_id && s.AssignmentId == assignment_id);
             if (subs == null)
             {
@@ -41,7 +41,7 @@ namespace CMS_API.Controllers
             try
             {
 
-                var context = await _context.Submissions.FirstOrDefaultAsync(c => c.Id == id);
+                var context = await _context.Submissions.FirstOrDefaultAsync(c => c.IdSubmission == id);
 
                 if (context != null)
                 {
@@ -59,5 +59,5 @@ namespace CMS_API.Controllers
         }
 
     }
-    
+
 }
