@@ -22,7 +22,7 @@ namespace CMS_API.Controllers
             _tokenService = tokenService;
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
             var login = await _context.Users
@@ -57,7 +57,7 @@ namespace CMS_API.Controllers
             return Ok(context);
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<IActionResult> CreateAccount([FromBody] UserProfileModel model)
         {
             User u = new User
