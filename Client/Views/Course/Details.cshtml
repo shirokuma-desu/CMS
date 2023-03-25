@@ -1,0 +1,31 @@
+﻿@model Client.Models.Course
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 bg-primary p-2 text-white mt-2 text-center text-capitalize">
+            product details page with nav-pills
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-lg-4 text-center border-right border-secondery">
+            <div class="tab-content row h-100 d-flex justify-content-center align-items-center" id="myTabContent">
+                <div class="tab-pane fade show active col-lg-12" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <img class="img-fluid" src="https://i.imgur.com/ZTkt4I5.jpg" />
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <h5>
+                @Model.Name
+            </h5>
+            <h3>
+                Code: @Model.Code
+            </h3>
+            <p>
+                Teach by @Model.Teacher.Name
+            </p>
+            <a asp-area="" asp-controller="" asp-action="" class="btn m-2"><i class="fas fa-link"></i>Enroll</a>
+        </div>
+    </div>
+</div>

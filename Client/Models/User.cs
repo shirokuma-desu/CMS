@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Client.Models
+{
+    public partial class User
+    {
+        public User()
+        {
+            Courses = new HashSet<Course>();
+            EnrollCourses = new HashSet<EnrollCourse>();
+        }
+
+        public int UserId { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public int RoleId { get; set; }
+        public string Name { get; set; }
+        public DateTime? Dob { get; set; }
+        public string Phone { get; set; }
+        public string Major { get; set; }
+
+        public virtual Role Role { get; set; }
+        public virtual ICollection<Course> Courses { get; set; }
+        public virtual ICollection<EnrollCourse> EnrollCourses { get; set; }
+    }
+}

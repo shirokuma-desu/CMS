@@ -1,0 +1,50 @@
+﻿@model IEnumerable<Client.Models.Course>
+
+@{
+    ViewData["Title"] = "Courses";
+}
+
+<div class="jumbotron text-center" style="margin-bottom:0">
+  <h1>All Course is here</h1>
+  <p>Minh and Dat code this super amazing web!</p> 
+</div>
+
+<div class="container mx-auto mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+             <form method="get" class="card card-sm">
+                  <div class="card-body row no-gutters align-items-center">
+                      <div class="col-auto">
+                           <i class="fas fa-search h4 text-body"></i>
+                      </div>
+                      <div class="col">
+                           <input name="search" class="form-control form-control-lg form-control-borderless" type="search" placeholder="Search Course Code">
+                      </div>
+                      <div class="col-auto">
+                           <button class="btn btn-lg btn-success" type="submit">Search</button>
+                      </div>
+                   </div>
+             </form>
+        </div>
+    </div>
+    
+    <br />
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card" style="width: 18rem;">
+                    <img src="https://i.imgur.com/ZTkt4I5.jpg" class="card-img-top" alt="...">
+                      <div class="card-body">
+                            <h5 class="card-title">@item.Name</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@item.Code</h6>
+                            @*<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>*@
+                                <a asp-area="" asp-route-id="@item.CourseId" asp-controller="Course" asp-action="Details" class="btn m-2"><i class="fas fa-link"></i>Detail</a>
+                      </div>
+                </div>
+            </div> 
+        }
+    </div>
+</div> 
+
