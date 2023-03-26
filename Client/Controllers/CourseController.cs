@@ -56,7 +56,7 @@ namespace Client.Controllers
             {
                 PropertyNameCaseInsensitive = true
             };
-            Course[]? course = JsonSerializer.Deserialize<Course[]>(strData, options);
+            Course? course = JsonSerializer.Deserialize<Course>(strData, options);
             return View(course);
         }
     }

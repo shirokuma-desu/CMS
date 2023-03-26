@@ -31,7 +31,7 @@ namespace Client.Controllers
         public async Task<IActionResult> Login(string username, string password)
         {
             var loginModel = new { Username = username, Password = password };
-            var response = await _httpClient.PostAsJsonAsync("https://localhost:7087/api/User/", loginModel);
+            var response = await _httpClient.PostAsJsonAsync("https://localhost:7087/api/User/login", loginModel);
             if (response.IsSuccessStatusCode)
             {
                 var jwtToken = await response.Content.ReadAsStringAsync();
@@ -44,6 +44,11 @@ namespace Client.Controllers
                 ViewBag.ErrorMessage = "Username or password is wrong";
                 return View();
             }
+        }
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
