@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -26,6 +28,23 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Course" asp-action="Index">Course</a>
                         </li>
                     </ul>
+                    @if (ViewContext.HttpContext.Session.GetString("username") == null)
+                    {
+                        <ul class="navbar-nav ml-auto">
+                          <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Login">Login</a>
+                          </li>
+                        </ul>
+                    }
+                    else
+                    {
+                        <ul class="navbar-nav ml-auto">
+                              <li class="nav-item">
+                                    <a class="nav-link text-dark">@ViewContext.HttpContext.Session.GetString("username")</a>
+                              </li>
+                        </ul>
+                    }
+
                 </div>
             </div>
         </nav>
@@ -38,7 +57,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - Client - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2023 - Minh and Dat
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

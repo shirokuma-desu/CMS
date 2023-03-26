@@ -20,12 +20,11 @@ namespace Client.Controllers
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            CourseApiUrl = "https://localhost:7087/api/Course";
         }
 
         public async Task<IActionResult> Index()
         {
-            HttpResponseMessage response1 = await client.GetAsync(CourseApiUrl);
+            HttpResponseMessage response1 = await client.GetAsync("https://localhost:7087/api/Course");
             string strData1 = await response1.Content.ReadAsStringAsync();
             var options1 = new JsonSerializerOptions
             {
@@ -35,29 +34,29 @@ namespace Client.Controllers
             return View(listCourse); 
         }
 
-        //public async Task<IActionResult> Index(string search)
-        //{
-        //    HttpResponseMessage response1 = await client.GetAsync(CourseApiUrl);
-        //    string strData1 = await response1.Content.ReadAsStringAsync();
-        //    var options1 = new JsonSerializerOptions
-        //    {
-        //        PropertyNameCaseInsensitive = true
-        //    };
-        //    List<Course> listCourse = JsonSerializer.Deserialize<List<Course>>(strData1, options1);
-        //    List<Course> searchListCourse = listCourse.FindAll(c => c.Code.Equals(search)).ToList();
-        //    return View(searchListCourse);
-        //}
+        [HttpPost]
+        public async Task<IActionResult> Index(string search)
+        {
+            HttpResponseMessage response1 = await client.GetAsync("https://localhost:7087/api/Course/getcoursebycode/" + search);
+            string strData1 = await response1.Content.ReadAsStringAsync();
+            var options1 = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            List<Course> listCourse = JsonSerializer.Deserialize<List<Course>>(strData1, options1);
+            List<Course> searchListCourse = listCourse.FindAll(c => c.Code.Equals(search)).ToList();
+            return View(searchListCourse);
+        }
 
         public async Task<IActionResult> Details(int id) 
         {
-            HttpResponseMessage response = await client.GetAsync(CourseApiUrl+ "/getcoursebyid/" + id);
-            Console.Write(response);
+            HttpResponseMessage response = await client.GetAsync("https://localhost:7087/api/Course/getcoursebyid/" + id);
             string strData = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
-            Course course = JsonSerializer.Deserialize<Course>(strData, options);
+            Course[]? course = JsonSerializer.Deserialize<Course[]>(strData, options);
             return View(course);
         }
     }

@@ -1,4 +1,4 @@
-﻿@model Client.Models.Course
+﻿@model IEnumerable<Client.Models.Course>
 
 
 <div class="container">
@@ -17,15 +17,15 @@
         </div>
         <div class="col-lg-7">
             <h5>
-                @Model.Name
+                @Model.First().Name
             </h5>
             <h3>
-                Code: @Model.Code
+                Code: @Model.First().Code
             </h3>
-            <p>
-                Teach by @Model.Teacher.Name
-            </p>
-            <a asp-area="" asp-controller="" asp-action="" class="btn m-2"><i class="fas fa-link"></i>Enroll</a>
+            @*<p>
+                Teach by @Model.First().Teacher.Name
+            </p>*@
+            <a asp-area="" asp-controller="" asp-action="" class="btn btn-success bg-dark"><i class="fas fa-link"></i>Enroll</a>
         </div>
     </div>
 </div>
