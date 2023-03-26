@@ -1,9 +1,9 @@
 ﻿using CMS_API.ControllerModels;
 using CMS_API.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace CMS_API.Controllers
 {
@@ -20,52 +20,98 @@ namespace CMS_API.Controllers
 
         [HttpPost("courseId")]
         [Authorize(Roles = "student")]
-        public async Task<IActionResult> enrollCourse(int courseId, [FromBody] Enroll_Course model )
+        public async Task<IActionResult> enrollCourse([FromBody] EnrollCourseModel enrollCourse)
         {
-            var userId = int.Parse(User.Identity?.Name);
+            try
+            {
+                var tokenEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+                if (tokenEmail == null)
+                {
+                    return BadRequest($"Not found claim email from token");
+                }
 
-            EnrollCourse e = new EnrollCourse
-            {
-                StudentId = model.StudentId,
-                CourseId = model.CourseId,
-            };
-            var courseIdexist = await _context.EnrollCourses.FirstOrDefaultAsync(c => c.CourseId == courseId);
-            if (courseId == null)
-            {
-                await _context.EnrollCourses.AddAsync(e);
+                var studentByEmail = await _context.Users.FirstOrDefaultAsync(x => x.Email == tokenEmail);
+                if (studentByEmail == null)
+                {
+                    return BadRequest($"Student with email {tokenEmail} not existed");
+                }
+
+                var courseId = int.Parse(enrollCourse.CourseId);
+                var courseById = await _context.Courses.FirstOrDefaultAsync(x => x.CourseId == courseId);
+                if (courseById == null)
+                {
+                    return BadRequest($"Course with id {courseId} not existed");
+                }
+
+                // Check if student already enrolled
+                var alreadyEnrolled = await _context.EnrollCourses.FirstOrDefaultAsync(x => x.StudentId == studentByEmail.UserId && x.CourseId == courseId);
+                if (alreadyEnrolled != null)
+                {
+                    return Ok();
+                }
+
+                // Add enroll course
+                await _context.EnrollCourses.AddAsync(new EnrollCourse
+                {
+                    StudentId = studentByEmail.UserId,
+                    CourseId = courseId,
+                });
+
                 await _context.SaveChangesAsync();
+
                 return Ok();
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest();
+                Console.WriteLine(ex);
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpDelete("courseId")]
         [Authorize(Roles = "student")]
-        public async Task<IActionResult> unrollCourse(int courseId)
+        public async Task<IActionResult> unrollCourse([FromBody] EnrollCourseModel enrollCourse)
         {
-            var userId = int.Parse(User.Identity?.Name);
             try
             {
-
-                var context = await _context.EnrollCourses.FirstOrDefaultAsync(c => c.CourseId == courseId && userId == c.StudentId);
-
-                if (context != null)
+                var tokenEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+                if (tokenEmail == null)
                 {
-                    var c = _context.EnrollCourses.Remove(context);
-                    await _context.SaveChangesAsync();
-                    return Ok();
+                    return BadRequest($"Not found claim email from token");
                 }
-                return NotFound();
+
+                var studentByEmail = await _context.Users.FirstOrDefaultAsync(x => x.Email == tokenEmail);
+                if (studentByEmail == null)
+                {
+                    return BadRequest($"Student with email {tokenEmail} not existed");
+                }
+
+                var courseId = int.Parse(enrollCourse.CourseId);
+                var courseById = await _context.Courses.FirstOrDefaultAsync(x => x.CourseId == courseId);
+                if (courseById == null)
+                {
+                    return BadRequest($"Course with id {courseId} not existed");
+                }
+
+                // Check if student already enrolled
+                var alreadyEnrolled = await _context.EnrollCourses.FirstOrDefaultAsync(x => x.StudentId == studentByEmail.UserId && x.CourseId == courseId);
+                if (alreadyEnrolled == null)
+                {
+                    return BadRequest($"Student with email {studentByEmail.Email} not enroll course with ID {courseById.CourseId}");
+                }
+
+                // Remove enroll course with student id and course id
+                _context.EnrollCourses.Remove(alreadyEnrolled);
+
+                await _context.SaveChangesAsync();
+
+                return Ok();
             }
-            catch
-            (Exception ex)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return BadRequest(ex.Message);
             }
         }
-
     }
 }
