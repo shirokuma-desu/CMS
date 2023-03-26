@@ -1,8 +1,62 @@
 ﻿@{
     ViewData["Title"] = "CMS Home Page";
+    var sessionAccount = Context.Session.GetObjectFromJson<SessionAccount>("sessionAccount");
 }
 
+@model HomeViewModel
+
 <div class="jumbotron text-center" style="margin-bottom:0">
-  <h1>Wellcome to CMS HN Plus</h1>
-  <p>Minh and Dat code this super amazing web!</p> 
+    <h1>Welcome to CMS HN Plus</h1>
+    <p>Minh and Dat code this super amazing web!</p>
+</div>
+<div>
+    @{
+        if(sessionAccount != null)
+        {
+            <h2 class="h5">My course(s): </h2>
+            if(sessionAccount.Role == Constant.STUDENT_ROLE)
+            {
+                if(@Model.EnrollCourses != null)
+                {
+                    var studentEnrollCourse = @Model.EnrollCourses.Data;
+                    if(studentEnrollCourse != null)
+                    {
+                        if(studentEnrollCourse.Count() > 0)
+                        {
+                            @foreach(var course in studentEnrollCourse)
+                            {
+                                <ol>
+                                    <li>
+                                        <a href="/Courses/Details/@course.CourseId">
+                                            @course.Course.Name
+                                        </a>
+                                    </li>
+                                </ol>
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var teacherCourse = @Model.TeacherCourses.Data;
+                if(teacherCourse != null)
+                {
+                    if(teacherCourse.Count() > 0)
+                    {
+                        <ol>
+                            @foreach(var course in teacherCourse)
+                            {
+                                <li>
+                                    <a href="/Courses/Details/@course.Id">
+                                        @course.Name
+                                    </a>
+                                </li>
+                            }
+                        </ol>
+                    }
+                }
+            }
+        }
+    }
 </div>

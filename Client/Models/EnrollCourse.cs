@@ -9,7 +9,7 @@ namespace Client.Models
         public int? CourseId { get; set; }
         public int IdEnrollCourse { get; set; }
 
-        public virtual Course Course { get; set; }
-        public virtual User Student { get; set; }
+        public virtual Course? Course { get; set; }
+        public virtual User? Student { get; set; }
     }
 }

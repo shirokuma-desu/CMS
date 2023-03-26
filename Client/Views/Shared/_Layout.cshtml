@@ -1,4 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Http
+@{
+    var sessionAccount = Context.Session.GetObjectFromJson<SessionAccount>("sessionAccount");
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -28,23 +31,25 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Course" asp-action="Index">Course</a>
                         </li>
                     </ul>
-                    @if (ViewContext.HttpContext.Session.GetString("username") == null)
+                    @if(sessionAccount != null)
                     {
                         <ul class="navbar-nav ml-auto">
-                          <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Login">Login</a>
-                          </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark">@sessionAccount.Name</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Logout</a>
+                            </li>
                         </ul>
                     }
                     else
                     {
                         <ul class="navbar-nav ml-auto">
-                              <li class="nav-item">
-                                    <a class="nav-link text-dark">@ViewContext.HttpContext.Session.GetString("username")</a>
-                              </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">Login</a>
+                            </li>
                         </ul>
                     }
-
                 </div>
             </div>
         </nav>

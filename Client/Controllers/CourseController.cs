@@ -1,63 +1,81 @@
-﻿using Client.Models;
+﻿using Client.Helper;
+using Client.Models;
+using Client.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
-using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Client.Controllers
 {
+    [Route("Courses")]
     public class CourseController : Controller
     {
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
+        private readonly string _GET_COURSE_BY_ID_URL = "https://localhost:7087/api/Courses";
+        private readonly string _IS_STUDENT_ENROLL_COURSE_URL = "https://localhost:7087/api/Enroll/IsStudentEnrollCourse";
+        private readonly string _ENROLL_COURSE_URL = "https://localhost:7087/api/Enroll/courseId";
 
-        private readonly HttpClient client = null;
-        private string CourseApiUrl = "";
-
-        public CourseController()
+        [HttpGet("Details/{id}")]
+        public async Task<IActionResult> Details(string id, CourseDetailsViewModel viewModel)
         {
-            client = new HttpClient();
-            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
-            client.DefaultRequestHeaders.Accept.Add(contentType);
+            try
+            {
+                if(int.TryParse(id, out int convId))
+                {
+                    var getCourseDetailsResponse = await APIHelper.GetAsync<CourseDetailsViewModel>($"{_GET_COURSE_BY_ID_URL}/{convId}", null);
+
+                    if(getCourseDetailsResponse != null)
+                    {
+                        viewModel.Course = getCourseDetailsResponse.Course;
+                        viewModel.Teacher = getCourseDetailsResponse.Teacher;
+                        viewModel.IsEnrolled = false;
+                    }
+
+                    var sessionAccount = HttpContext.Session.GetObjectFromJson<SessionAccount>("sessionAccount");
+                    if(sessionAccount != null)
+                    {
+                        var isStudentEnrollResponse = await APIHelper.GetAsync<CourseDetailsViewModel>($"{_IS_STUDENT_ENROLL_COURSE_URL}?courseId={id}", sessionAccount.Token);
+                        if(isStudentEnrollResponse != null)
+                        {
+                            viewModel.IsEnrolled = isStudentEnrollResponse.IsEnrolled;
+                        }
+                    }
+
+                    return View(viewModel);
+                }
+            }
+            catch(Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.ToString());
+            }
+
+            return RedirectPermanent("/");
         }
 
-        public async Task<IActionResult> Index()
+        [HttpGet("Enroll/{id}")]
+        public async Task<IActionResult> Unenroll(string id)
         {
-            HttpResponseMessage response1 = await client.GetAsync("https://localhost:7087/api/Course");
-            string strData1 = await response1.Content.ReadAsStringAsync();
-            var options1 = new JsonSerializerOptions
+            try
             {
-                PropertyNameCaseInsensitive = true
-            };
-            List<Course> listCourse = JsonSerializer.Deserialize<List<Course>>(strData1, options1);
-            return View(listCourse); 
+                if(int.TryParse(id, out int convId))
+                {
+                    var sessionAccount = HttpContext.Session.GetObjectFromJson<SessionAccount>("sessionAccount");
+                    if(sessionAccount != null)
+                    {
+                        var unenrollResponse = await APIHelper.PostAsync<EnrollRequest, CourseDetailsViewModel>($"{_ENROLL_COURSE_URL}", new EnrollRequest { CourseId = id }, sessionAccount.Token);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.ToString());
+            }
+
+            return RedirectToAction("Details", new { id = id });
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Index(string search)
+        class EnrollRequest
         {
-            HttpResponseMessage response1 = await client.GetAsync("https://localhost:7087/api/Course/getcoursebycode/" + search);
-            string strData1 = await response1.Content.ReadAsStringAsync();
-            var options1 = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-            List<Course> listCourse = JsonSerializer.Deserialize<List<Course>>(strData1, options1);
-            List<Course> searchListCourse = listCourse.FindAll(c => c.Code.Equals(search)).ToList();
-            return View(searchListCourse);
-        }
-
-        public async Task<IActionResult> Details(int id) 
-        {
-            HttpResponseMessage response = await client.GetAsync("https://localhost:7087/api/Course/getcoursebyid/" + id);
-            string strData = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-            Course[]? course = JsonSerializer.Deserialize<Course[]>(strData, options);
-            return View(course);
+            [JsonPropertyName("courseId")]
+            public string CourseId { get; set; }
         }
     }
 }

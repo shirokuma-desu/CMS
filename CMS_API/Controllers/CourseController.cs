@@ -27,48 +27,9 @@ namespace CMS_API.Controllers
             var context = await _context.Courses.ToListAsync();
             return Ok(context);
         }
-        [HttpGet("getcoursebycode/{code}")]
-        [AllowAnonymous]
-        public async Task<IActionResult> getCoursebyCode(string code)
-        {
-            try
-            {
-                var context = await _context.Courses.Where(c=>c.Code.Contains(code.ToUpper())).ToListAsync();
-                if (context == null)
-                {
-                    return NoContent();
-                }
-                return Ok(context);
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            
-        }
 
-        [HttpGet("getcoursebyid/{id}")]
-        [AllowAnonymous]
-        public async Task<IActionResult> getCoursebyId(int id)
-        {
-            try
-            {
-                var context = await _context.Courses.Include(u=>u.Teacher).FirstOrDefaultAsync(c => c.CourseId == id);
-                if (context == null)
-                {
-                    return NoContent();
-                }
-                return Ok(context);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-        }
 
         [HttpPost]
-        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> Post([FromBody] CourseModel model)
         {
             Course c = new Course
@@ -83,7 +44,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpPatch("{id}")]
-        [Authorize(Roles = "teacher")]
+        //public async Task<IActionResult> Put(int id, int teacher_id, string name, string code)
         public async Task<IActionResult> Put(int id, [FromBody] CourseModel model)
         {
             try

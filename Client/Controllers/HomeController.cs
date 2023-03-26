@@ -1,49 +1,45 @@
-﻿using Client.Models;
+﻿using Client.Helper;
+using Client.Models;
+using Client.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using System.Net.Http;
-using System.Text;
 
 namespace Client.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly string _GET_STUDENT_ENROLL_COURSE_URL = "https://localhost:7087/api/Enroll/GetStudentEnrollCourse/";
+        private readonly string _GET_TEACHER_COURSE_URL = "https://localhost:7087/api/Courses/GetCourseByTeacherId";
         private readonly ILogger<HomeController> _logger;
-        private readonly HttpClient _httpClient;
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri("https://your-api.com/");
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(HomeViewModel viewModel)
         {
-            return View();
-        }
-
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Login(string username, string password)
-        {
-            var loginModel = new { Username = username, Password = password };
-            var response = await _httpClient.PostAsJsonAsync("https://localhost:7087/api/User/", loginModel);
-            if (response.IsSuccessStatusCode)
+            var sessionAccount = HttpContext.Session.GetObjectFromJson<SessionAccount>("sessionAccount");
+            // If user is authenticated
+            if(sessionAccount != null)
             {
-                var jwtToken = await response.Content.ReadAsStringAsync();
-                HttpContext.Session.SetString("Token", jwtToken);
-                HttpContext.Session.SetString("username", username);
-                return RedirectToAction("Index", "Home");
+                // If logged user is student
+                if(sessionAccount.Role == Commons.Constant.STUDENT_ROLE)
+                {
+                    // Find all student's courses
+                    var response = await APIHelper.GetAsync<GetStudentEnrollCourseResponse>($"{_GET_STUDENT_ENROLL_COURSE_URL}", sessionAccount.Token);
+                    if(response != null)
+                        viewModel.EnrollCourses = new GetStudentEnrollCourseResponse { Data = response.Data };
+                }
+                // If logged user is teacher
+                else if(sessionAccount.Role == Commons.Constant.TEACHER_ROLE)
+                {
+                    var response = await APIHelper.GetAsync<GetTeacherCourse>($"{_GET_TEACHER_COURSE_URL}?email={sessionAccount.Email}", sessionAccount.Token);
+                    if(response != null)
+                        viewModel.TeacherCourses = new GetTeacherCourse { Data = response.Data };
+                }
             }
-            else
-            {
-                ViewBag.ErrorMessage = "Username or password is wrong";
-                return View();
-            }
+
+            return View(viewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -52,4 +48,6 @@ namespace Client.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
+
+
 }

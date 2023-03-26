@@ -1,6 +1,4 @@
-﻿using CMS_API.ControllerModels;
-using CMS_API.Models;
-using Microsoft.AspNetCore.Authorization;
+﻿using CMS_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -35,15 +33,14 @@ namespace CMS_API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "teacher")]
-        public async Task<IActionResult> Post([FromBody] MaterialModel model)
+        public async Task<IActionResult> Post(string title, string information, string url, int course_id)
         {
             LearningMaterial lm = new LearningMaterial
             {
-                CourseId = model.CourseId,
-                Title = model.Title,
-                Url = model.Url,
-                Information = model.Information,
+                CourseId = course_id,
+                Title = title,
+                Url = url,
+                Information = information,
             };
             if (lm == null)
             {
@@ -60,35 +57,7 @@ namespace CMS_API.Controllers
                 return BadRequest(ex);
             }
         }
-
-        [HttpPatch("id")]
-        [Authorize(Roles = "teacher")]
-        public async Task<IActionResult> Put(int id, [FromBody] MaterialModel model)
-        {
-            try
-            {
-                var tmp = await _context.LearningMaterials.FindAsync(id);
-                if (tmp == null)
-                {
-                    return NotFound();
-                }
-
-                tmp.Title = model.Title;
-                tmp.Information = model.Information;
-                tmp.Url = model.Url;
-
-                _context.Entry(tmp).CurrentValues.SetValues(tmp);
-                await _context.SaveChangesAsync();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         [HttpDelete("id")]
-        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> Delete(int id)
         {
             try

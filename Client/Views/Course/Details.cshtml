@@ -1,31 +1,348 @@
-﻿@model IEnumerable<Client.Models.Course>
+﻿@model CourseDetailsViewModel
+@{
+    ViewData["Title"] = "Course details";
+    var sessionAccount = Context.Session.GetObjectFromJson<SessionAccount>("sessionAccount");
+}
+@section Scripts{
+    <!-- File upload script -->
+    <script>
+        $(() => {
+            const fileInput = document.querySelectorAll(".file-upload");
+            const fileInputArr = [...fileInput];
 
+            fileInputArr.forEach(fileInput => {
+                const fileLabel = document.querySelector(".custom-file-upload");
+                let successButton; // Declare the success button variable outside of the event listener
 
+                fileInput.addEventListener("change", function () {
+                    const filename = this.value.split("\\").pop();
+                    fileLabel.textContent = filename ? filename : "Choose File";
+
+                    if (filename) { // If a file is chosen
+                        successButton = this.parentElement.querySelector(".btn-submit");
+                        successButton.style.display = "inline-block";
+                    } else { // If no file is chosen
+                        successButton = this.parentElement.querySelector(".btn-submit");
+                        successButton.style.display = "none";
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- Countdown script -->
+    <script>
+        $(() => {
+            function countdown() {
+                const span = document.querySelectorAll('.countdown'); // Get the span element
+                const spanArray = [...span];
+                spanArray.forEach(span => {
+                    if (span.innerHTML != "Deadline has passed") {
+                        let countDownDate = new Date(span.getAttribute("data-deadline")).getTime(); // Set the countdown date (in milliseconds)
+
+                        // Update the count down every 1 second
+                        let x = setInterval(function () {
+
+                            // Get the current time
+                            let now = new Date().getTime();
+
+                            // Calculate the time remaining
+                            let distance = countDownDate - now;
+
+                            // Calculate days, hours, minutes, and seconds remaining
+                            let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                            let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                            let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                            // Update the span text
+                            span.innerHTML = days + " days, " + hours + " hours, "
+                                + minutes + " minutes, " + seconds + " seconds";
+
+                            // If the countdown is finished, update the span text and clear the interval
+                            if (distance < 0) {
+                                clearInterval(x);
+                                span.innerHTML = "Deadline has passed";
+                            }
+                        }, 1000);
+                    }
+                });
+            }
+
+            countdown(); // Call
+        });
+    </script>
+
+    @if(sessionAccount != null)
+    {
+        if(sessionAccount.Role == Constant.STUDENT_ROLE)
+        {
+            <!-- Submit file script -->
+            <script>
+                $(() => {
+                    document.querySelectorAll('.btn-submit').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const msg = $(btn).parents().find('.uploadMessage');
+
+                            $.ajax({
+                                url: $(btn).parent().attr('action'),
+                                type: 'POST',
+                                data: new FormData($(btn).parent()[0]),
+                                processData: false,
+                                contentType: false,
+                                headers: {
+                                    'Authorization': `bearer @sessionAccount.Token`
+                                },
+                                beforeSend: function (response) {
+                                    $(msg).text('Uploading...');
+                                },
+                                success: function (response) {
+                                    $(msg).css('color', 'green');
+                                    $(msg).text('Upload succesfully');
+                                },
+                                error: function (xhr, status, error) {
+                                    $(msg).css('color', 'red');
+                                    $(msg).text(xhr.responseText);
+                                }
+                            });
+                        });
+                    });
+                });
+            </script>
+        }
+        if(sessionAccount.Role == Constant.TEACHER_ROLE)
+        {
+            <!-- Teacher script -->
+            <script>
+                $(() => {
+                    $('#add-assignment-btn').click(() => {
+                        $('#add-assignment').css("display", "block");
+                        $('#add-material').css("display", "none");
+                    });
+
+                    $('#add-material-btn').click(() => {
+                        $('#add-material').css("display", "block");
+                        $('#add-assignment').css("display", "none");
+                    });
+
+                    $('.add-assignment-cancel').click(() => {
+                        $('#add-assignment').css("display", "none");
+                        $('#add-material').css("display", "none");
+                    });
+
+                    // Add assignment script
+                    $('#add-assignment-submit').click(() => {
+                        $.ajax({
+                            type: 'POST',
+                            url: 'https://localhost:7087/api/Assignments',
+                            data: JSON.stringify({
+                                courseId: $('#course-id').val().toString(),
+                                name: $('#assignment-name').val().toString(),
+                                deadline: $('#assignment-deadline').val().toString(),
+                                description: $('#assignment-desc').val().toString(),
+                                url: $('#assignment-url').val().toString()
+                            }),
+                            contentType: 'application/json',
+                            headers: {
+                                'Authorization': `bearer @sessionAccount.Token`
+                            },
+                            success: function (response) {
+                                $('#add-assgn-msg').css('color', 'green');
+                                $('#add-assgn-msg').text('Add successfully');
+                            },
+                            error: function (xhr, status, error) {
+                                console.log(xhr.responseText);
+                                $('#add-assgn-msg').css('color', 'red');
+                                $('#add-assgn-msg').text(xhr.responseText);
+                            }
+                        });
+                    });
+
+                    // Add material script
+                    $("#add-material-submit").click(function () {
+                        var formData = new FormData();
+                        formData.append("materialName", $("#material-name").val().toString())
+                        formData.append("materialDesc", $("#material-desc").val().toString())
+                        formData.append("materialUpload", $("#material-upload")[0].files[0])
+                        formData.append("courseId", $("#course-id").val().toString())
+
+                        $.ajax({
+                            url: 'https://localhost:7087/api/Materials',
+                            type: "POST",
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            headers: {
+                                'Authorization': `bearer @sessionAccount.Token`
+                            },
+                            success: function (data) {
+                                $('#add-mat-msg').css('color', 'green');
+                                $('#add-mat-msg').text('Add successfully');
+                            },
+                            error: function (xhr, status, error) {
+                                console.log(xhr.responseText);
+                                $('#add-mat-msg').css('color', 'red');
+                                $('#add-mat-msg').text(xhr.responseText);
+                            }
+                        });
+                    });
+
+                    // Handle file change
+                    const fileInput = $('#material-upload');
+                    $(fileInput).on("change", function () {
+                        const filename = this.value.split("\\").pop();
+                        const fileLabel = $("#material-upload-lb");
+                        if (filename) {
+                            fileLabel.text(filename)
+                        }
+                        else {
+                            fileLabel.text("Upload Material File");
+                        }
+                    });
+                });
+            </script>
+        }
+    }
+}
 <div class="container">
-    <div class="row">
-        <div class="col-lg-12 bg-primary p-2 text-white mt-2 text-center text-capitalize">
-            product details page with nav-pills
-        </div>
-    </div>
-    <div class="row mt-4">
-        <div class="col-lg-4 text-center border-right border-secondery">
-            <div class="tab-content row h-100 d-flex justify-content-center align-items-center" id="myTabContent">
-                <div class="tab-pane fade show active col-lg-12" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    <img class="img-fluid" src="https://i.imgur.com/ZTkt4I5.jpg" />
+    <div class="d-flex col gap-2">
+        <div class="col-8">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title">@Model.Course.CourseName </h1>
+                    <h6 class="card-subtitle mb-2 text-muted">@Model.Course.CourseCode</h6>
+                    <p class="card-text">@Model.Course.CourseDescription</p>
+                    @if(sessionAccount != null)
+                    {
+                        if(sessionAccount.Role == Constant.STUDENT_ROLE)
+                        {
+                            if(Model.IsEnrolled)
+                            {
+                                <a href="https://localhost:7092/Courses/Enroll/@Model.Course.CourseId" class="card-link">Unenroll</a>
+                            }
+                            else
+                            {
+                                <a href="https://localhost:7092/Courses/Enroll/@Model.Course.CourseId" class="card-link">Enroll</a>
+                            }
+                        }
+                        <span>@ViewData["enrollMsg"]</span>
+                    }
+                </div>
+            </div>
+            @if(sessionAccount != null)
+            {
+                if(sessionAccount.Role == Constant.TEACHER_ROLE)
+                {
+                    <div class="mt-2">
+                        <div class="card p-2 overflow-scroll" style="max-height: 662px;">
+                            <div class="card-body">
+                                <div class="d-flex gap-3 mb-3">
+                                    <button class="btn btn-info" id="add-assignment-btn">Add assignement</button>
+                                    <button class="btn btn-warning" id="add-material-btn">Add material</button>
+                                </div>
+                                <form id="add-assignment" style="display:none;">
+                                    <div class="mb-3 d-none">
+                                        <label for="course-id" class="form-label">Course ID</label>
+                                        <input type="text" class="form-control" id="course-id" value="@Model.Course.CourseId">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="assignment-name" class="form-label">Assignment name</label>
+                                        <input type="text" class="form-control" id="assignment-name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="assignment-deadline">Assignment deadline</label>
+                                        <input id="assignment-deadline" class="form-control" type="date" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="assignment-desc" class="form-label">Assignment description</label>
+                                        <input type="text" class="form-control" id="assignment-desc">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="assignment-url" class="form-label">Assignment URL</label>
+                                        <input type="text" class="form-control" id="assignment-url">
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="add-assignment-submit">Submit</button>
+                                    <button type="button" class="btn btn-danger add-assignment-cancel">Cancel</button>
+                                    <span id="add-assgn-msg"></span>
+                                </form>
+                                <form id="add-material" style="display:none;">
+                                    <div class="mb-3">
+                                        <label for="material-name" class="form-label">Material name</label>
+                                        <input type="text" class="form-control" id="material-name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="material-desc" class="form-label">Material description</label>
+                                        <input type="text" class="form-control" id="material-desc">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label id="material-upload-lb" for="material-upload" class="custom-file-upload">Upload Material File</label>
+                                        <input name="postedFile" id="material-upload" class="material-upload" type="file" />
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="add-material-submit">Submit</button>
+                                    <button type="button" class="btn btn-danger add-assignment-cancel">Cancel</button>
+                                    <span id="add-mat-msg"></span>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            <div class="mt-2">
+                <div class="card p-2 overflow-scroll" style="max-height: 662px;">
+                    @foreach(var assignment in Model.Course.Assignments)
+                    {
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h4 class="card-title">@assignment.Name </h4>
+                                <p class="h6">
+                                    @TimeHelper.ConvertToDateFormat(assignment.Deadline) -
+                                    <span class="text-muted countdown" data-deadline="@assignment.Deadline">@TimeHelper.GetTimeLeft(@assignment.Deadline)</span>
+                                </p>
+                                <h6 class="card-subtitle mb-2 text-muted">@assignment.Url</h6>
+                                <p class="card-text">@assignment.Description</p>
+                                @if(sessionAccount != null)
+                                {
+                                    @if(DateTime.Now < TimeHelper.ConvertStringToDateTime(assignment.Deadline))
+                                    {
+                                        <form action="https://localhost:7087/api/Submission/@assignment.Id" method="post">
+                                            <label for="file-upload-@assignment.Id" class="custom-file-upload">Submit File</label>
+                                            <input name="postedFile" id="file-upload-@assignment.Id" class="file-upload" type="file" />
+                                            <button class="btn btn-success btn-submit" type="button" style="display:none;">Submit</button>
+                                            <span class="uploadMessage"></span>
+                                        </form>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
-        <div class="col-lg-7">
-            <h5>
-                @Model.First().Name
-            </h5>
-            <h3>
-                Code: @Model.First().Code
-            </h3>
-            @*<p>
-                Teach by @Model.First().Teacher.Name
-            </p>*@
-            <a asp-area="" asp-controller="" asp-action="" class="btn btn-success bg-dark"><i class="fas fa-link"></i>Enroll</a>
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">More info: </h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Create by</h6>
+                    <ul>
+                        <li>Number of classmate(s): <b>@Model.Course.NumberOfClassmate</b></li>
+                        <li>Number of material(s): <b>@Model.Course.Materials.Count()</b></li>
+                        <li>Number of assignment(s): <b>@Model.Course.Assignments.Count()</b></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card mt-2 pt-2 px-2 overflow-scroll" style="max-height: 661px;">
+                @foreach(var material in Model.Course.Materials)
+                {
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">@material.Name </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@material.Url</h6>
+                            <p class="card-text">@material.Description</p>
+                            <a href="https://localhost:7087/api/Materials/Download?filePath=@material.Url" class="card-link">Download link</a>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>

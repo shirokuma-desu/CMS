@@ -1,5 +1,4 @@
-﻿using CMS_API.ControllerModels;
-using CMS_API.Models;
+﻿using CMS_API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,10 +26,9 @@ namespace CMS_API.Controllers
             return Ok(context);
         }
 
-
         [HttpDelete("{id}")]
         [Authorize(Roles = "teacher")]
-        [SwaggerOperation(Summary = "xoa bai tap")]
+        [SwaggerOperation(Summary = "thua")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -55,50 +53,10 @@ namespace CMS_API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "teacher")]
-        public async Task<IActionResult> Post([FromBody] AssignmentModel model)
+        public async Task<IActionResult> Post(string name, string information, DateOnly date, string url, int course_id)
         {
-            var userId = int.Parse(User.Identity?.Name);
-            Assignment asg = new Assignment
-            {
-                Name = model.Name,
-                Url = model.Url,
-                TeacherId = userId,
-                Description = model.Description,
-                Deadline = model.Deadline,
-                CourseId = model.CourseId,
-            };
-            await _context.Assignments.AddAsync(asg);
-            await _context.SaveChangesAsync();
             return Ok();
         }
-
-        
-        [HttpPatch("{id}")]
-        [Authorize(Roles = "teacher")]
-        public async Task<IActionResult> Put(int id, [FromBody] AssignmentModel model)
-        {
-            try
-            {
-                var tmp = await _context.Assignments.FindAsync(id);
-                if (tmp == null)
-                {
-                    return NotFound();
-                }
-
-                tmp.Description = model.Description;
-                tmp.Name = model.Name;
-                tmp.Deadline = model.Deadline;
-                tmp.Url = model.Url;
-                _context.Entry(tmp).CurrentValues.SetValues(tmp);
-                await _context.SaveChangesAsync();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
 
     }
 }
