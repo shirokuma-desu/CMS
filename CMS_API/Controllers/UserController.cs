@@ -38,15 +38,15 @@ namespace CMS_API.Controllers
                 });
 
             var jwtToken = _tokenService.CreateToken(login);
+            // Append jwtToken to cookie
+            Response.Cookies.Append("jwtToken", jwtToken);
+
             // chỗ này m gọi class tạo token
             return Ok(new
             {
                 status = "Success",
                 message = "User logged in successfully",
-                data = new
-                {
-                    token = jwtToken
-                }
+                token = jwtToken
             });
         }
 
