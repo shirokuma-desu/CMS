@@ -25,19 +25,19 @@ namespace CMS_API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
-            var login = await _context.Users
+            var userLogin = await _context.Users
                 .Where(a => a.Email == loginModel.Username && a.Password == loginModel.Password).Include(r => r.Role)
                 .FirstOrDefaultAsync();
 
-            if (login == null)
+            if (userLogin == null)
                 return Unauthorized(new
                 {
                     status = "Unauthorized",
                     message = "Username or password is wrong",
                     data = ""
                 });
-
-            var jwtToken = _tokenService.CreateToken(login);
+                
+            var jwtToken = _tokenService.CreateToken(userLogin);
             // chỗ này m gọi class tạo token
             return Ok(new
             {
@@ -45,6 +45,9 @@ namespace CMS_API.Controllers
                 message = "User logged in successfully",
                 data = new
                 {
+                    role = userLogin.Role.Name,
+                    email = userLogin.Email,
+                    name = userLogin.Name,
                     token = jwtToken
                 }
             });
