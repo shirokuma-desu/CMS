@@ -1,5 +1,6 @@
 ﻿using CMS_API.ControllerModels;
 using CMS_API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ namespace CMS_API.Controllers
         }
 
         [HttpGet("course/{id}/teacher")]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> getListSubByStudent(int assignment_id)
         {
 
@@ -29,10 +31,11 @@ namespace CMS_API.Controllers
             return Ok(subs);
         }
 
-        [HttpGet("student")]
-        public async Task<IActionResult> GetSubByStudent(int student_id, int assignment_id)
+        [HttpGet("student/{assignment_id}")]
+        [Authorize(Roles = "student")]
+        public async Task<IActionResult> GetSubByStudent(int assignment_id)
         {
-
+            var student_id = int.Parse(User.Identity?.Name);
             var subs = await _context.Submissions.FirstOrDefaultAsync(s => s.StudentJd == student_id && s.AssignmentId == assignment_id);
             if (subs == null)
             {
@@ -44,6 +47,7 @@ namespace CMS_API.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "student")]
         public async Task<IActionResult> Submit([FromBody] SubmissionModel model)
         {
             var userId = int.Parse(User.Identity?.Name);
@@ -54,12 +58,40 @@ namespace CMS_API.Controllers
                 AssignmentId = model.AssignmentId,
                 StudentJd = userId,
             };
-            await _context.Submissions.AddAsync(s);
-            await _context.SaveChangesAsync();
-            return Ok();
+            try
+            {
+                var tmp = await _context.Submissions.FindAsync(userId);
+                if (tmp == null)
+                {
+                    return NotFound();
+                }
+                var time = await _context.Assignments.FindAsync(tmp.AssignmentId);
+                if (time == null)
+                {
+                    return NotFound();
+                }
+                tmp.SubmissionTime = model.SubmissionTime;
+                tmp.Url = model.Url;
+                if (model.SubmissionTime > time.Deadline)
+                {
+                    await _context.Submissions.AddAsync(s);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest("not allow ");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "student")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -81,6 +113,44 @@ namespace CMS_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPatch]
+        [Authorize(Roles = "student")]
+        public async Task<IActionResult> Edit([FromBody] SubmissionModel model)
+        {
+            var userId = int.Parse(User.Identity?.Name);
+            try
+            {
+                var tmp = await _context.Submissions.FindAsync(userId); 
+                if (tmp == null)
+                {
+                    return NotFound();
+                }
+                var time =await _context.Assignments.FindAsync(tmp.AssignmentId);    
+                if (time == null)
+                {
+                    return NotFound();
+                }
+                tmp.SubmissionTime = model.SubmissionTime;
+                tmp.Url = model.Url;
+                if (model.SubmissionTime > time.Deadline)
+                {
+                    _context.Entry(tmp).CurrentValues.SetValues(tmp);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest("not allow ");
+                }
+               
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
 
     }
 
