@@ -21,7 +21,7 @@ namespace CMS_API.JWTService
             var claims = new List<Claim>
         {
             new(ClaimTypes.Role, account.Role.Name.ToString()),
-            new(ClaimTypes.Email, account.Email),
+            new(ClaimTypes.Email, account.Email.ToString()),
             new(ClaimTypes.Name, account.UserId.ToString())
         };
             var securityKey = new SymmetricSecurityKey(
